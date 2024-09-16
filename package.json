@@ -1,23 +1,50 @@
 {
-  "name": "editor-cursor-state-checker",
-  "displayName": "editor-cursor-state-checker",
-  "description": "",
+  "name": "cursor-state-checker",
+  "displayName": "Cursor State Checker",
+  "description": "Checks the state of the cursor (end of line or next to specific characters).",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.93.0"
+    "vscode": "^1.70.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./dist/extension.js",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tokoro-it/vscode-editor-cursor-state-checker.git"
+  },
   "contributes": {
     "commands": [
       {
-        "command": "editor-cursor-state-checker.helloWorld",
-        "title": "Hello World"
+        "command": "cursor-state-checker.show-context-key",
+        "title": "%cmd.show-context-key-title%"
+      },
+      {
+        "command": "cursor-state-checker.check",
+        "title": "%cmd.check-title%"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Cursor State Checker",
+      "properties": {
+        "cursor-state-checker.enabled": {
+          "description": "%config.enabled%",
+          "type": "boolean",
+          "default": true
+        },
+        "cursor-state-checker.rightOfCursorCheckChars": {
+          "description": "%config.rightOfCursorCheckChars%",
+          "type": "string",
+          "default": "\"'`(){}[]<>"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -28,20 +55,22 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vsce": "npx vsce package --allow-star-activation"
   },
   "devDependencies": {
-    "@types/vscode": "^1.93.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.70.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "typescript": "^5.5.4",
-    "ts-loader": "^9.5.1",
-    "webpack": "^5.94.0",
-    "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.1.0",
+    "eslint": "^9.9.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.4",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4"
   }
 }

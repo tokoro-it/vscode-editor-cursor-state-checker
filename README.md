@@ -1,71 +1,77 @@
-# editor-cursor-state-checker README
+# Cursor State Checker
 
-This is the README for your extension "editor-cursor-state-checker". After writing up a brief description, we recommend including the following sections.
+[日本語版README](./README.ja.md)
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Checks the cursor's position in the editor and sets the context.  
+You can use these contexts in `when` conditions for keyboard shortcuts.
 
-For example if there is an image subfolder under your extension project workspace:
+| State                                                                                                                                                 | Context Key                    | Checked Characters                              |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- | :---------------------------------------------- |
+| Normal (neither case)                                                                                                                                 | CSChecker.normal               |                                                 |
+| Cursor is at the end of the line                                                                                                                      | CSChecker.eol                  |                                                 |
+| The character immediately to the right of the cursor (next) is a specific character (quote, bracket/tag) or a space followed by a specific character. | CSChecker.rightIsSpecifiedChar | `"'``(){}[]<>`<br>※ Can be changed via settings |
 
-\!\[feature X\]\(images/feature-x.png\)
+<details>
+<summary>Usage example of context keys</summary>
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+In normal cases, use `cursorWordEndRight` to move the cursor word by word.  
+When a specific character or a space followed by a specific character is to the right of the cursor, you can move to the next character using `cursorRight`.  
+When at the end of the line, the default behavior occurs, and a `space` is inserted.
 
-## Requirements
+```json
+{
+  "key": "shift+space",
+  "command": "cursorWordEndRight",
+  "when": "textInputFocus && !accessibilityModeEnabled && CSChecker.normal"
+},
+{
+  "key": "shift+space",
+  "command": "cursorRight",
+  "when": "textInputFocus && !accessibilityModeEnabled && CSChecker.rightIsSpecifiedChar"
+}
+```
+</details>
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
-## Extension Settings
+### Status Bar
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The status bar will display whether the cursor is in the EOL/Right state based on its position.  
+Clicking on the status bar allows you to copy each context key to the clipboard.
 
-For example:
+#### Normal
 
-This extension contributes the following settings:
+![status-none](images/status-normal.png)
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+#### End of Line
 
-## Known Issues
+![status-eol](images/status-eol.png)
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+#### A specified character is to the right (next)
+
+![status-right](images/status-right.png)
+
+#### Clicking the status bar
+
+![statusbar-click](images/statusbar-click.png)
+
+## Settings
+
+This extension provides the following settings:
+
+| Key                                          | Description                                        | Default Value  |
+| :------------------------------------------- | :------------------------------------------------- | :------------- |
+| `check-cursor-state.enabled`                 | Enable/Disable the extension                       | true           |
+| `check-cursor-state.rightOfCursorCheckChars` | Characters to check for to the right of the cursor | `"'``(){}[]<>` |
+|                                              |                                                    |                |
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release.
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+* MIT

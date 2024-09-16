@@ -1,26 +1,99 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+// 'vscode' モジュールには VS Code の拡張機能 API が含まれています
+// モジュールをインポートし、コード内で vscode という別名で参照します
+import * as vscode from "vscode";
+import { Config } from "./Config";
+import { Button, Command, getContextKey } from "./constants/constants";
+import { getCursorState, setContextCursorState } from "./CursorState";
+import { localeText } from "./lang/localization";
+import { createStatusBarItem, updateStatusbarItemText } from "./StatusBarItem";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+// このメソッドは拡張機能がアクティブ化されたときに呼び出されます
+// 拡張機能は、コマンドが初めて実行されたときにアクティブ化されます
 export function activate(context: vscode.ExtensionContext) {
+  //ステータスバー作成
+  const statusBarItem = createStatusBarItem(context);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "editor-cursor-state-checker" is now active!');
+  // カーソル位置の状態を判定するコマンド
+  let disposable = vscode.commands.registerCommand(Command.check, () => {
+    //拡張機能の有効／無効を判定
+    const isEnabled = Config.isEnabled();
+    if (!isEnabled) {
+      return;
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('editor-cursor-state-checker.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from editor-cursor-state-checker!');
-	});
+    //カーソル位置の状態を取得
+    const cursorState = getCursorState();
 
-	context.subscriptions.push(disposable);
+    // コンテキストを設定
+    setContextCursorState(cursorState);
+
+    //ステータスバー更新
+    updateStatusbarItemText(statusBarItem, cursorState);
+  });
+  context.subscriptions.push(disposable);
+
+  // コンテキストキーを表示するコマンド
+  disposable = vscode.commands.registerCommand(Command.showContextKey, () => {
+    //拡張機能の有効／無効を判定
+    const isEnabled = Config.isEnabled();
+    if (!isEnabled) {
+      return;
+    }
+
+    const msg = vscode.window.showInformationMessage(
+      localeText("message.show-context-key"),
+      Button.normal,
+      Button.eol,
+      Button.rightChar
+    );
+    msg.then(async (value) => {
+      //コンテキストキーを取得
+      const contextKey = getContextKey(value);
+      if (contextKey) {
+        try {
+          //クリップボードにコピー
+          await vscode.env.clipboard.writeText(contextKey);
+
+          //成功したら、ステータスバーメッセージを表示
+          vscode.window.setStatusBarMessage(
+            localeText("message.copy-success"),
+            3000
+          );
+        } catch (error) {
+          //エラーメッセージを表示
+          vscode.window.showErrorMessage(
+            `${localeText("message.copy-failed")}:${error}`
+          );
+        }
+      }
+    });
+  });
+  context.subscriptions.push(disposable);
+
+  // 設定変更を監視し、有効／無効を制御
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    if (event.affectsConfiguration(Config.ENABLED)) {
+      //拡張機能の有効／無効を判定
+      const isEnabled = Config.isEnabled();
+      if (!isEnabled) {
+        //設定値を削除
+        setContextCursorState();
+      }
+      updateStatusbarItemText(statusBarItem);
+    }
+  });
+
+  // エディターがアクティブになったとき／カーソル移動時に自動でチェック
+  vscode.window.onDidChangeActiveTextEditor(() => {
+    vscode.commands.executeCommand(Command.check);
+  });
+  vscode.window.onDidChangeTextEditorSelection(() => {
+    vscode.commands.executeCommand(Command.check);
+  });
+  vscode.workspace.onDidChangeTextDocument(() => {
+    vscode.commands.executeCommand(Command.check);
+  });
 }
 
-// This method is called when your extension is deactivated
+// このメソッドは拡張機能が非アクティブ化されたときに呼び出されます
 export function deactivate() {}
