@@ -3,11 +3,19 @@
   "displayName": "Cursor State Checker",
   "description": "Checks the state of the cursor (end of line or next to specific characters).",
   "version": "0.0.1",
+  "publisher": "tokoro-it",
   "engines": {
     "vscode": "^1.70.0"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "vscode",
+    "editor",
+    "cursor",
+    "state",
+    "checker"
   ],
   "activationEvents": [
     "*"
