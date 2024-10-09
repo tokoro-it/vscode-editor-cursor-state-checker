@@ -2,6 +2,7 @@
   "cmd.show-context-key-title": "Cursor State Checker : Show Button to Copy the Context Key.",
   "cmd.check-title": "Cursor State Checker : Check Cursor State",
   "config.enabled": "Enable check cursor state",
+  "config.leftOfCursorCheckChars": "Characters that should be checked when the cursor is at the left of them.",
   "config.rightOfCursorCheckChars": "Characters that should be checked when the cursor is at the right of them.",
   "message.show-context-key": "Click the button to copy the context key.",
   "message.copy-success": "Copied to clipboard !",

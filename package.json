@@ -1,7 +1,7 @@
 {
   "name": "cursor-state-checker",
   "displayName": "Cursor State Checker",
-  "description": "Checks the state of the cursor (end of line or next to specific characters).",
+  "description": "Checks the state of the cursor (BOL or EOL or left and next to specific characters).",
   "version": "0.0.1",
   "publisher": "tokoro-it",
   "engines": {
@@ -45,6 +45,11 @@
           "description": "%config.enabled%",
           "type": "boolean",
           "default": true
+        },
+        "cursor-state-checker.leftOfCursorCheckChars": {
+          "description": "%config.leftOfCursorCheckChars%",
+          "type": "string",
+          "default": "\"'`(){}[]<>"
         },
         "cursor-state-checker.rightOfCursorCheckChars": {
           "description": "%config.rightOfCursorCheckChars%",

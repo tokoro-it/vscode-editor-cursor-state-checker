@@ -2,7 +2,8 @@
   "cmd.show-context-key-title": "Cursor State Checker : コンテキストキーをコピーするボタンを表示",
   "cmd.check-title": "Cursor State Checker : カーソルの状態をチェック",
   "config.enabled": "カーソルの状態チェックを有効にする",
-  "config.rightOfCursorCheckChars": "カーソルの右にあるときにチェックする文字",
+  "config.leftOfCursorCheckChars": "カーソルの左にあるかチェックする文字",
+  "config.rightOfCursorCheckChars": "カーソルの右にあるかチェックする文字",
   "message.show-context-key": "ボタンをクリックしてコンテキストキーをコピーします。",
   "message.copy-success": "クリップボードにコピーしました！",
   "message.copy-failed": "コピーに失敗しました"

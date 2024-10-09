@@ -8,6 +8,10 @@ export class Config {
   private static readonly KEY_ENABLED = "enabled";
   private static readonly KEY_RIGHT_OF_CURSOR_CHECK_CHARS =
     "rightOfCursorCheckChars";
+  private static readonly KEY_LEFT_OF_CURSOR_CHECK_CHARS =
+    "leftOfCursorCheckChars";
+  private static readonly DEFAULT_CHECK_CHARS = "\"'`(){}[]<>";
+
   static readonly ENABLED = `${EXTENSION_ID}.enabled`;
 
   private static getConfiguration(): vscode.WorkspaceConfiguration {
@@ -28,8 +32,22 @@ export class Config {
    * @returns 判定する文字列
    */
   static getRightOfCursorCheckChars(): string {
-    const DEFAULT = "\"'`(){}[]<>";
     const config = this.getConfiguration();
-    return config.get<string>(this.KEY_RIGHT_OF_CURSOR_CHECK_CHARS, DEFAULT);
+    return config.get<string>(
+      this.KEY_RIGHT_OF_CURSOR_CHECK_CHARS,
+      this.DEFAULT_CHECK_CHARS
+    );
+  }
+
+  /**
+   * カーソルの左にきたか判定する文字
+   * @returns 判定する文字列
+   */
+  static getLeftOfCursorCheckChars(): string {
+    const config = this.getConfiguration();
+    return config.get<string>(
+      this.KEY_LEFT_OF_CURSOR_CHECK_CHARS,
+      this.DEFAULT_CHECK_CHARS
+    );
   }
 }
