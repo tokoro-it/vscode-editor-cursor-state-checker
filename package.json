@@ -2,7 +2,7 @@
   "name": "cursor-state-checker",
   "displayName": "Cursor State Checker",
   "description": "Checks the state of the cursor (BOL or EOL or left and next to specific characters).",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "tokoro-it",
   "engines": {
     "vscode": "^1.70.0"
@@ -69,7 +69,8 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "vsce": "npx vsce package --allow-star-activation"
+    "vsce": "npx vsce package --allow-star-activation",
+    "vsce:publish": "npx vsce publish --allow-star-activation"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
