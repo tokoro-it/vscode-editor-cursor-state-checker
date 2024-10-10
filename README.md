@@ -7,12 +7,16 @@
 Checks the cursor's position in the editor and sets the context.  
 You can use these contexts in `when` conditions for keyboard shortcuts.
 
-| State                                                                                                                                                 | Context Key                    | Checked Characters                              |
-| :---------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- | :---------------------------------------------- |
-| Normal (neither case)                                                                                                                                 | CSChecker.normal               |                                                 |
-| Cursor is at the end of the line                                                                                                                      | CSChecker.eol                  |                                                 |
-| The character immediately to the right of the cursor (next) is a specific character (quote, bracket/tag) or a space followed by a specific character. | CSChecker.rightIsSpecifiedChar | `"'``(){}[]<>`<br>※ Can be changed via settings |
+Here is the English translation:
 
+| State                                                                                                                                       | Context Key                    | Characters to Check                            |
+| :------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------- | :--------------------------------------------- |
+| The area to the right of the cursor is normal (not at the beginning of the line, no specific characters)                                    | CSChecker.normalLeft           |                                                |
+| The area to the left of the cursor is normal (not at the beginning of the line, no specific characters)                                     | CSChecker.normalRight          |                                                |
+| The cursor is at the beginning of the line                                                                                                  | CSChecker.bol                  |                                                |
+| The cursor is at the end of the line                                                                                                        | CSChecker.eol                  |                                                |
+| The character to the left (previous) of the cursor is a specific character (quote, bracket/tag) or a space followed by a specific character | CSChecker.leftIsSpecifiedChar  | `"'``(){}[]<>`<br>*Can be changed in settings* |
+| The character to the right (next) of the cursor is a specific character (quote, bracket/tag) or a space followed by a specific character    | CSChecker.rightIsSpecifiedChar | `"'``(){}[]<>`<br>*Can be changed in settings* |
 <details>
 <summary>Usage example of context keys</summary>
 
@@ -37,20 +41,27 @@ When at the end of the line, the default behavior occurs, and a `space` is inser
 
 ### Status Bar
 
-The status bar will display whether the cursor is in the EOL/Right state based on its position.  
-Clicking on the status bar allows you to copy each context key to the clipboard.
+The cursor position determines the state displayed in the status bar.  
+By clicking the status bar, you can copy each context key to the clipboard.
 
-#### Normal
+Here is the English translation:
 
-![status-none](images/status-normal.png)
+#### Beginning of the Line
 
-#### End of Line
+![status-bol](images/status-bol.png)
+
+#### End of the Line
 
 ![status-eol](images/status-eol.png)
 
-#### A specified character is to the right (next)
+#### Specific Character to the Left
+
+![status-left](images/status-left.png)
+
+#### Specific Character to the Right
 
 ![status-right](images/status-right.png)
+
 
 #### Clicking the status bar
 
@@ -60,17 +71,16 @@ Clicking on the status bar allows you to copy each context key to the clipboard.
 
 This extension provides the following settings:
 
-| Key                                          | Description                                        | Default Value  |
-| :------------------------------------------- | :------------------------------------------------- | :------------- |
-| `check-cursor-state.enabled`                 | Enable/Disable the extension                       | true           |
-| `check-cursor-state.rightOfCursorCheckChars` | Characters to check for to the right of the cursor | `"'``(){}[]<>` |
-|                                              |                                                    |                |
+Here is the English translation:
 
+| Key                                          | Description                                    | Default Value  |
+| :------------------------------------------- | :--------------------------------------------- | :------------- |
+| `check-cursor-state.enabled`                 | Enable/Disable the extension                   | true           |
+| `check-cursor-state.leftOfCursorCheckChars`  | Characters to check to the left of the cursor  | `"'``(){}[]<>` |
+| `check-cursor-state.rightOfCursorCheckChars` | Characters to check to the right of the cursor | `"'``(){}[]<>` |
 ## Release Notes
 
-### 0.0.1
-
-Initial release.
+* see [CHANGELOG](CHANGELOG.md)
 
 ## License
 

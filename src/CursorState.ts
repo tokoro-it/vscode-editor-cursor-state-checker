@@ -3,11 +3,17 @@ import { Config } from "./Config";
 import { ContextKey } from "./constants/constants";
 
 export type CursorState = {
-  /** 行末 */
-  isLineEnd: boolean;
+  //行頭
+  isBol: boolean;
 
-  /** 閉じタグの右 */
-  isRightOfCursorSpecifiedChar: boolean;
+  /** 行末 */
+  isEol: boolean;
+
+  /** 指定した文字の左 */
+  isLeftSpecifiedChar: boolean;
+
+  /** 指定した文字の右 */
+  isRightSpecifiedChar: boolean;
 };
 
 /**
@@ -18,8 +24,10 @@ export const getCursorState = (): CursorState => {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return {
-      isLineEnd: false,
-      isRightOfCursorSpecifiedChar: false,
+      isBol: false,
+      isEol: false,
+      isLeftSpecifiedChar: false,
+      isRightSpecifiedChar: false,
     };
   }
 
@@ -29,40 +37,88 @@ export const getCursorState = (): CursorState => {
   // 現在の行のテキスト
   const lineText = document.lineAt(cursorPosition.line).text;
 
-  // カーソルが行末にあるかを判定
-  const isLineEnd = cursorPosition.character === lineText.length;
+  // 行頭にあるかを判定
+  const isBol = cursorPosition.character === 0;
 
-  // カーソルが行末でなければ、右側の文字が特定の記号であるかを判定
-  let isRightOfCursorSpecifiedChar = false;
-  if (!isLineEnd && cursorPosition.character < lineText.length) {
-    //カーソルの次の2文字目の位置を取得
-    //次の文字がスペースの場合、更に次の1文字を判定したいので、
-    //2文字以上あれば、2文字後ろの位置を取得する
-    const nextCharPosition = cursorPosition.with(
-      cursorPosition.line,
-      Math.min(cursorPosition.character + 2, lineText.length)
-    );
+  // 行末にあるかを判定
+  const isEol = cursorPosition.character === lineText.length;
 
-    //スペースを除いた次の文字を取得
-    const nextChars = document
-      .getText(new vscode.Range(cursorPosition, nextCharPosition))
-      .trim();
+  // 左側の文字を判定
+  const isLeft = isLeftSpecifiedChar(lineText, cursorPosition.character);
 
-    if (nextChars) {
-      // 設定からカーソル右にあるかチェックする文字を取得
-      const rightOfCursorCheckChars = Config.getRightOfCursorCheckChars();
-
-      // カーソルの右側の文字が特定の記号であるかを判定
-      isRightOfCursorSpecifiedChar = rightOfCursorCheckChars.includes(
-        nextChars[0]
-      );
-    }
-  }
+  // 右側の文字を判定
+  const isRight = isRightSpecifiedChar(lineText, cursorPosition.character);
 
   return {
-    isLineEnd,
-    isRightOfCursorSpecifiedChar,
+    isBol,
+    isEol,
+    isLeftSpecifiedChar: isLeft,
+    isRightSpecifiedChar: isRight,
   };
+};
+
+/**
+ * カーソルの左に特定の文字があるか判定
+ * @param lineText １行分の文字列
+ * @param cursorPosition カーソル位置インデックス
+ * @returns true:特定の文字がある
+ */
+const isLeftSpecifiedChar = (
+  lineText: string,
+  cursorPosition: number
+): boolean => {
+  if (cursorPosition <= 0) {
+    //行頭なので、左隣に文字はない
+    return false;
+  }
+
+  // 取得できる文字数は最大2文字。カーソル位置が2未満ならそれだけ取得
+  const start = Math.max(0, cursorPosition - 2);
+  const end = cursorPosition;
+
+  //1~2文字取得して、空白文字を削除
+  const nextChars = lineText.slice(start, end).trim();
+
+  if (!nextChars) {
+    //空白文字しかなかった
+    return false;
+  }
+
+  // カーソルの左側の文字が、特定の文字かを判定
+  const checkChars = Config.getLeftOfCursorCheckChars();
+  return checkChars.includes(nextChars.slice(-1));
+};
+
+/**
+ * カーソルの右に特定の文字があるか判定
+ * @param lineText １行分の文字列
+ * @param cursorPosition カーソル位置インデックス
+ * @returns true:特定の文字がある
+ */
+const isRightSpecifiedChar = (
+  lineText: string,
+  cursorPosition: number
+): boolean => {
+  if (lineText.length <= cursorPosition) {
+    //行末なので、右隣に文字はない
+    return false;
+  }
+
+  // 残りの文字が2文字以上ある場合は2文字、それ以外は残りの全てを取得
+  const start = cursorPosition;
+  const end = Math.min(cursorPosition + 2, lineText.length);
+
+  //1~2文字取得して、空白文字を削除
+  const nextChars = lineText.slice(start, end).trim();
+
+  if (!nextChars) {
+    //空白文字しかなかった
+    return false;
+  }
+
+  // カーソルの右側の文字が、特定の文字かを判定
+  const checkChars = Config.getRightOfCursorCheckChars();
+  return checkChars.includes(nextChars[0]);
 };
 
 /**
@@ -70,18 +126,42 @@ export const getCursorState = (): CursorState => {
  * @param cursorState カーソル状態
  */
 export const setContextCursorState = (cursorState?: CursorState) => {
-  //どちらもfalseのときNormal=true
-  const isNormal =
-    !cursorState?.isLineEnd && !cursorState?.isRightOfCursorSpecifiedChar;
-  vscode.commands.executeCommand("setContext", ContextKey.normal, isNormal);
+  //行頭でない　かつ　左に特定の文字がない
+  const isNormalLeft = !cursorState?.isBol && !cursorState?.isLeftSpecifiedChar;
+  vscode.commands.executeCommand(
+    "setContext",
+    ContextKey.normalLeft,
+    isNormalLeft
+  );
+
+  //行末でない　かつ　右に特定の文字がない
+  const isNormalRight =
+    !cursorState?.isEol && !cursorState?.isRightSpecifiedChar;
+  vscode.commands.executeCommand(
+    "setContext",
+    ContextKey.normalRight,
+    isNormalRight
+  );
+
+  //行頭、行末、左、右をセット
+  vscode.commands.executeCommand(
+    "setContext",
+    ContextKey.bol,
+    cursorState?.isBol
+  );
   vscode.commands.executeCommand(
     "setContext",
     ContextKey.eol,
-    cursorState?.isLineEnd
+    cursorState?.isEol
+  );
+  vscode.commands.executeCommand(
+    "setContext",
+    ContextKey.leftChar,
+    cursorState?.isLeftSpecifiedChar
   );
   vscode.commands.executeCommand(
     "setContext",
     ContextKey.rightChar,
-    cursorState?.isRightOfCursorSpecifiedChar
+    cursorState?.isRightSpecifiedChar
   );
 };

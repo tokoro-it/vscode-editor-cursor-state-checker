@@ -42,8 +42,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     const msg = vscode.window.showInformationMessage(
       localeText("message.show-context-key"),
-      Button.normal,
+      Button.normalLeft,
+      Button.normalRight,
+      Button.bol,
       Button.eol,
+      Button.leftChar,
       Button.rightChar
     );
     msg.then(async (value) => {

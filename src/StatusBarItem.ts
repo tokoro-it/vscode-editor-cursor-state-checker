@@ -44,8 +44,10 @@ export const updateStatusbarItemText = (
   const enabled = isEnabled ? "$(pass)" : "$(error)";
 
   const statusIcon = (state?: boolean) => (state ? "$(check)" : "$(dash)");
-  const lineEnd = statusIcon(cursorState?.isLineEnd);
-  const right = statusIcon(cursorState?.isRightOfCursorSpecifiedChar);
+  const bol = statusIcon(cursorState?.isBol);
+  const eol = statusIcon(cursorState?.isEol);
+  const left = statusIcon(cursorState?.isLeftSpecifiedChar);
+  const right = statusIcon(cursorState?.isRightSpecifiedChar);
 
-  statusBarItem.text = `${enabled} EOL:${lineEnd} Right:${right}`;
+  statusBarItem.text = `${enabled} BOL:${bol} L:${left} R:${right} EOL:${eol}`;
 };
